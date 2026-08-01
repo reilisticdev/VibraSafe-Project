@@ -82,6 +82,8 @@ A single-page, Apple-style luxury landing site presenting the science and hardwa
 
 ### 2. Companion safety app (`/safety-app`)
 
+🔗 **Live demo:** [vibra-safe-project.vercel.app](https://vibra-safe-project-ci9t.vercel.app)
+
 A progressive web app that acts as the live control center and simulator for the wearable hardware. Routes (App Router):
 
 | Route | Page | What it does |
