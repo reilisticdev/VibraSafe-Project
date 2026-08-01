@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(npx next *)",
+      "Bash(node -e ' *)",
+      "Bash(grep -a -o '[ -~]\\\\{4,\\\\}' \"/c/Users/reily/OneDrive/Desktop/Projects/HearingAids/safety-app/public/models/guardian-cuff.glb\")",
+      "mcp__Blender__get_blendfile_summary_datablocks",
+      "mcp__Blender__get_objects_summary",
+      "mcp__Blender__get_object_detail_summary",
+      "mcp__Blender__get_screenshot_of_area_as_image",
+      "mcp__Blender__execute_blender_code"
+    ]
+  }
+}

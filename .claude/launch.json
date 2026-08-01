@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "safety-app-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "safety-app"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "marketing-website-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "marketing-website", "--", "-p", "3001"],
+      "port": 3001
+    }
+  ]
+}

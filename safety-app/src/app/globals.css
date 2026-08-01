@@ -1,0 +1,337 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   VIBRASAFE - DESIGN SYSTEM
+   ------------------------------------------------------------------
+   Derived from the physical device: delicate silver jewelry worn
+   against skin, celestial motif. A deep, quiet base lets the two
+   signal channels read instantly under stress.
+
+   Contrast audited to WCAG 2.1 AA against --color-void:
+     ink 18.9:1 - muted 9.1:1 - tactile 9.7:1 - bone 10.4:1 - sos 5.6:1
+     brand 5.3:1 (text-brand on void, e.g. icon wells/nav accents)
+   Every value below AA for body text is used only for large text
+   or non-text UI, where the 3:1 threshold applies.
+
+   --color-brand button/pill text: void-on-brand measures 5.3:1 (AA
+   pass for normal text); ink-on-brand measures only 3.56:1 (AA fail)
+   - .gc-btn-primary and every brand-accented pill use void text for
+   this reason, never ink, despite void reading "dark on a mid-tone"
+   at a glance.
+================================================================== */
+@theme {
+  /* ---- Typeface ------------------------------------------------ */
+  /* System stack: no Google Fonts fetch, so builds have no external
+     network dependency and first paint has no font swap. */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Surfaces ------------------------------------------------ */
+  --color-void: #07090d;
+  --color-surface: #10141c;
+  --color-surface-2: #181e29;
+  --color-surface-3: #212936;
+  --color-line: #2a3242;
+  --color-line-soft: #1d2531;
+
+  /* ---- Type ---------------------------------------------------- */
+  --color-ink: #f7f9fc;
+  --color-muted: #a3b0c2;
+  --color-faint: #6b7a90;
+
+  /* ---- Jewelry metals ------------------------------------------ */
+  --color-silver: #d6deea;
+  --color-champagne: #e8d5b7;
+  --color-skin: #c9a88a;
+
+  /* ---- Brand (generic UI accent - never a safety signal) -------- */
+  --color-brand: #8b6cf7;
+  --color-brand-hover: #a288ff;
+  --color-brand-active: #7358e0;
+
+  /* ---- Signal channels (never interchangeable) ----------------- */
+  --color-tactile: #f5a524; /* tactile, non-auditory, DIRECTIONAL */
+  --color-bone: #38d9e8;    /* bone conduction, AUDITORY, non-directional */
+
+  /* ---- Status -------------------------------------------------- */
+  --color-sos: #ff4438;
+  --color-safe: #35d07f;
+
+  /* ---- Fluid type scale ---------------------------------------- */
+  --text-display: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
+  --text-h1: clamp(1.95rem, 1.4rem + 2.4vw, 3.1rem);
+  --text-h2: clamp(1.5rem, 1.25rem + 1.1vw, 2rem);
+
+  /* ---- Motion -------------------------------------------------- */
+  --ease-native: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ---- Elevation ----------------------------------------------- */
+  --shadow-lift: 0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+    0 12px 32px -12px rgb(0 0 0 / 0.7);
+  --shadow-float: 0 1px 0 0 rgb(255 255 255 / 0.06) inset,
+    0 24px 60px -20px rgb(0 0 0 / 0.85);
+  /* Tinted glow, opt-in only - reserved for brand-accented marketing
+     surfaces (hero CTA, landing feature cards). Never applied to
+     functional dashboard/simulator/network cards, so an SOS-red
+     border stays the most visually alarming thing on any screen
+     that actually matters in an emergency. */
+  --shadow-brand-glow: 0 1px 0 0 rgb(255 255 255 / 0.05) inset,
+    0 16px 40px -14px color-mix(in oklab, var(--color-brand) 45%, transparent);
+}
+
+/* ============================ Base ============================ */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+  /* Guard: a single wide child should never scroll the whole page
+     sideways on mobile. */
+  overflow-x: hidden;
+}
+
+/* Ambient depth. Without this the page reads as flat black and the
+   glass cards have nothing to sit against. Fixed so it does not
+   scroll away, and inert so it never intercepts taps. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 15% -10%, rgb(139 108 247 / 0.10), transparent 60%),
+    radial-gradient(50rem 35rem at 95% 5%, rgb(56 217 232 / 0.08), transparent 62%),
+    radial-gradient(70rem 50rem at 50% 110%, rgb(56 217 232 / 0.05), transparent 65%);
+}
+
+/* Headings should never dangle a single word onto its own line. */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Accessibility: a visible, high-contrast focus ring on everything
+   interactive. Never remove this without an equivalent replacement. */
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Respect the OS reduced-motion setting. Especially important for a
+   product whose entire premise is motion feedback. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ========================= Components ========================= */
+@layer components {
+  /* ---- Card ---------------------------------------------------- */
+  /* Glass surface with a gradient hairline border. The inset white
+     line along the top edge is what stops it reading as a flat box. */
+  .gc-card {
+    position: relative;
+    border-radius: 1.25rem;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--color-surface-2) 92%, transparent),
+        color-mix(in oklab, var(--color-surface) 92%, transparent)
+      );
+    border: 1px solid var(--color-line-soft);
+    box-shadow: var(--shadow-lift);
+    backdrop-filter: blur(14px);
+  }
+
+  .gc-card-hover {
+    transition: transform 0.35s var(--ease-native),
+      border-color 0.35s var(--ease-native), box-shadow 0.35s var(--ease-native);
+  }
+  .gc-card-hover:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-line);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* ---- Tap target ---------------------------------------------- */
+  /* 56px minimum - exceeds the 44px WCAG target so the app stays
+     usable for elderly users and under emergency stress. */
+  .gc-tap {
+    min-height: 56px;
+    min-width: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ---- Eyebrow label ------------------------------------------- */
+  .gc-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  /* ---- Channel chip -------------------------------------------- */
+  /* Colour alone must never be the only signal, so chips always pair
+     the hue with a text label. */
+  .gc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-surface-2);
+  }
+
+  /* ---- Buttons -------------------------------------------------- */
+  .gc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 56px;
+    padding-inline: 1.5rem;
+    border-radius: 0.875rem;
+    font-weight: 700;
+    transition: filter 0.2s var(--ease-native),
+      transform 0.2s var(--ease-native), background-color 0.2s var(--ease-native);
+  }
+  .gc-btn:active { transform: scale(0.975); }
+
+  .gc-btn-primary {
+    background-color: var(--color-brand);
+    /* void, not ink: measured contrast is 5.3:1 (void) vs 3.56:1 (ink)
+       against this violet - void clears WCAG AA 4.5:1 for normal text,
+       ink does not. */
+    color: var(--color-void);
+  }
+  .gc-btn-primary:hover { filter: brightness(1.1); }
+
+  /* Opt-in: reserve for genuine hero-level marketing CTAs (landing
+     page Demo Mode, etc). Composes with .gc-btn-primary rather than
+     replacing it. */
+  .gc-btn-primary-glow:hover { box-shadow: var(--shadow-brand-glow); }
+
+  .gc-btn-ghost {
+    background-color: var(--color-surface-2);
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+  }
+  .gc-btn-ghost:hover { background-color: var(--color-surface-3); }
+
+  /* Opt-in card variant: landing-page marketing cards only. Never
+     dashboard/simulator/network cards - see --shadow-brand-glow. */
+  .gc-card-glow { box-shadow: var(--shadow-brand-glow); }
+
+  /* ---- Section rhythm ------------------------------------------ */
+  .gc-section {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    padding-block: clamp(3rem, 8vw, 7.5rem);
+    scroll-margin-top: 5.5rem;
+  }
+  @media (min-width: 640px) {
+    .gc-section { padding-inline: 1.5rem; }
+  }
+}
+
+/* =========================== Range =========================== */
+/* Large, glove-friendly thumbs. Accent passed per instance via
+   --gc-accent so tactile and bone-conduction stay distinguishable.
+   The filled portion is drawn with --gc-fill (a percentage). */
+.gc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+}
+.gc-range::-webkit-slider-runnable-track {
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: linear-gradient(
+    to right,
+    var(--gc-accent, var(--color-tactile)) 0%,
+    var(--gc-accent, var(--color-tactile)) var(--gc-fill, 50%),
+    var(--color-surface-3) var(--gc-fill, 50%),
+    var(--color-surface-3) 100%
+  );
+}
+.gc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 34px;
+  width: 34px;
+  margin-top: -11px;
+  border-radius: 999px;
+  background: #fff;
+  border: 4px solid var(--gc-accent, var(--color-tactile));
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.6);
+  transition: transform 0.15s var(--ease-native);
+}
+.gc-range:active::-webkit-slider-thumb { transform: scale(1.12); }
+
+.gc-range::-moz-range-track {
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface-3);
+}
+.gc-range::-moz-range-progress {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--gc-accent, var(--color-tactile));
+}
+.gc-range::-moz-range-thumb {
+  height: 30px;
+  width: 30px;
+  border-radius: 999px;
+  background: #fff;
+  border: 4px solid var(--gc-accent, var(--color-tactile));
+}
+
+/* ========================= Animations ========================= */
+@keyframes gc-pulse-ring {
+  0%   { transform: scale(0.85); opacity: 0.65; }
+  100% { transform: scale(2.4);  opacity: 0; }
+}
+.gc-pulse-ring { animation: gc-pulse-ring 1.8s var(--ease-native) infinite; }
+
+@keyframes gc-sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.gc-sweep { animation: gc-sweep 4s linear infinite; }
+
+@keyframes gc-breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.gc-breathe { animation: gc-breathe 2.4s ease-in-out infinite; }
